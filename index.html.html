@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Log: journal, workouts, food</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d8dee5;--acc:#0f766e;--acc-ink:#fff;--food:#b45309;--lift:#3949ab;--soft:#e3f1ef;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161c;--card:#18212a;--ink:#e8edf2;--mute:#92a1b0;--line:#2a3643;--acc:#2dd4bf;--acc-ink:#06201d;--food:#f59e0b;--lift:#8c9eff;--soft:#12302d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10161c;--card:#18212a;--ink:#e8edf2;--mute:#92a1b0;--line:#2a3643;--acc:#2dd4bf;--acc-ink:#06201d;--food:#f59e0b;--lift:#8c9eff;--soft:#12302d;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px}
+h1,h2{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;margin:0;letter-spacing:-.02em}
+h1{font-size:2rem;font-weight:800}
+h2{font-size:1.15rem;font-weight:600}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 12px}
+.datebar{display:flex;align-items:center;gap:6px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;min-height:40px}
+button:hover{border-color:var(--acc)}
+button:disabled{opacity:.6;cursor:not-allowed}
+button.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);font-weight:600}
+button.x{border:none;background:none;color:var(--mute);padding:4px 8px;min-height:32px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%}
+textarea{min-height:240px;resize:vertical;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font:800 1.5rem "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em}
+.stat span{color:var(--mute);font-size:.85rem}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc)}
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px;overflow-x:auto}
+.tabs button{flex:1 0 auto;border:none;background:none;border-radius:8px;color:var(--mute);font-weight:500}
+.tabs button[aria-selected=true]{background:var(--acc);color:var(--acc-ink);font-weight:600}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{min-width:0}
+.mood{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.mood button[aria-pressed=true]{background:var(--soft);border-color:var(--acc);font-weight:600}
+.ex{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.ex:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.sets{display:grid;grid-template-columns:28px 1fr 1fr 36px;gap:6px;align-items:center;margin:10px 0 8px}
+.sets small{color:var(--mute);font-size:.8rem}
+.sets .n{color:var(--mute);font-weight:600;text-align:center}
+.meta{color:var(--mute);font-size:.88rem}
+.meal{margin-top:14px}
+.meal h3{margin:0 0 4px;font-size:.95rem;color:var(--food)}
+.item{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);align-items:center}
+.item:last-child{border:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.empty{color:var(--mute);padding:8px 0}
+.frow{display:flex;gap:6px;margin-top:8px}
+.est{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 0;padding:8px;background:var(--soft);border-radius:8px}
+.est label{font-size:.8rem;color:var(--mute)}
+.est .meta{grid-column:1/-1}
+.tot{margin:14px 0 8px;padding:10px 12px;border-radius:10px;background:var(--soft);font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.msg{color:var(--food);margin:8px 0 0;font-size:.9rem}
+.big{font:800 2.2rem "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em}
+.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.wc{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.wc.got{opacity:.6}
+.wc img,.wc .ph{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--soft)}
+.wc .b{padding:8px 10px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:110px;margin:10px 0 4px}
+.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:.7rem;color:var(--mute)}
+.chart i{display:block;width:100%;border-radius:4px 4px 0 0;min-height:2px}
+.lbls{display:flex;gap:6px;font-size:.75rem;color:var(--mute)}
+.lbls span{flex:1;text-align:center}
+.pb{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.syncbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:-4px 0 10px;flex-wrap:wrap}
+.uid-pill{font-family:monospace;font-size:.75rem;background:var(--card);border:1px solid var(--line);padding:2px 8px;border-radius:6px;color:var(--mute);max-width:100%;overflow-x:auto}
+@media (max-width:480px){h1{font-size:1.6rem}.stat b{font-size:1.2rem}.top{flex-wrap:wrap}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Daily Log</h1>
+    <div class="datebar">
+      <button onclick="shift(-1)" aria-label="Previous day">‹</button>
+      <input type="date" id="dt" onchange="goto(this.value)" aria-label="Date" style="width:auto">
+      <button onclick="shift(1)" aria-label="Next day">›</button>
+      <button onclick="goto(iso(new Date()))">Today</button>
+    </div>
+  </div>
+  <div class="syncbar">
+    <div class="meta" id="sync" role="status">Saved in memory for this session.</div>
+    <div id="uid-box" class="uid-pill" style="display:none"></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div id="view"></div>
+</div>
+<datalist id="lifts"></datalist>
+
+<!-- Firebase SDKs for Cross-Device Sync & Auth -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+window._fb = {
+  initializeApp,
+  getAuth,
+  signInAnonymously,
+  signInWithCustomToken,
+  getFirestore,
+  doc,
+  setDoc,
+  onSnapshot,
+  collection
+};
+
+if (typeof window.initCloud === 'function') {
+  window.initCloud();
+}
+</script>
+
+<script>
+// Core application state (in-memory primary store + Firebase Firestore cloud sync)
+var db = { days: {}, goal: 10000, accts: [], wish: {}, su: 0 };
+var cur, tab = 'journal';
+var cloudCol = null, currentUser = null, lastU = {}, pushT = null, pushing = false, again = false, firstSync = false;
+
+function save() {
+  if (db.days[cur]) db.days[cur].u = Date.now();
+  schedulePush();
+}
+
+function lu(d) { return d.u || 1; }
+function setSync(t) { var e = document.getElementById('sync'); if (e) e.textContent = t; }
+
+function norm(d) {
+  return {
+    journal: String(d.journal || ''),
+    mood: num(d.mood),
+    steps: d.steps == null ? '' : d.steps,
+    bw: d.bw == null ? '' : d.bw,
+    money: (Array.isArray(d.money) ? d.money : []).map(function(m) {
+      return {
+        t: m && m.t == 'in' ? 'in' : 'out',
+        amt: Math.round(num(m && m.amt) * 100) / 100,
+        acct: String((m && m.acct) || ''),
+        note: String((m && m.note) || '')
+      };
+    }),
+    workout: (Array.isArray(d.workout) ? d.workout : []).map(function(e) {
+      return {
+        name: String((e && e.name) || ''),
+        sets: (Array.isArray(e && e.sets) ? e.sets : []).map(function(s) {
+          return {
+            reps: s && s.reps != null ? s.reps : '',
+            kg: s && s.kg != null ? s.kg : ''
+          };
+        })
+      };
+    }),
+    food: (Array.isArray(d.food) ? d.food : []).map(function(f) {
+      return {
+        meal: String((f && f.meal) || 'Snack'),
+        item: String((f && f.item) || ''),
+        kcal: f && f.kcal != null ? f.kcal : '',
+        p: f && f.p != null ? f.p : ''
+      };
+    }),
+    u: num(d.u) || 1
+  };
+}
+
+function schedulePush() {
+  if (!cloudCol || !currentUser) return;
+  clearTimeout(pushT);
+  pushT = setTimeout(pushAll, 1200);
+}
+
+async function pushAll() {
+  if (!cloudCol || !currentUser || !window._fb) return;
+  if (pushing) { again = true; return; }
+  pushing = true;
+  var fb = window._fb;
+  try {
+    do {
+      again = false;
+      for (var k of Object.keys(db.days)) {
+        var d = db.days[k];
+        if (!d.u) d.u = 1;
+        if (d.u > (lastU[k] || 0)) {
+          await fb.setDoc(fb.doc(cloudCol, k), JSON.parse(JSON.stringify(d)));
+          lastU[k] = d.u;
+        }
+      }
+      if ((db.su || 0) > (lastU.settings || 0)) {
+        await fb.setDoc(fb.doc(cloudCol, 'settings'), {
+          goal: db.goal,
+          u: db.su,
+          accts: JSON.parse(JSON.stringify(db.accts || []))
+        });
+        lastU.settings = db.su;
+      }
+      for (var wk of Object.keys(db.wish || {})) {
+        var w = db.wish[wk];
+        if (w.u > (lastU[wk] || 0)) {
+          await fb.setDoc(fb.doc(cloudCol, wk), JSON.parse(JSON.stringify(w)));
+          lastU[wk] = w.u;
+        }
+      }
+    } while (again);
+    setSync('Synced across your devices.');
+  } catch (e) {
+    setSync('Offline or sync paused. Your changes stay active in this session.');
+  }
+  pushing = false;
+}
+
+window.initCloud = async function() {
+  if (!window._fb) return;
+  try {
+    if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+      setSync('Offline mode. Download a JSON backup anytime in Progress.');
+      return;
+    }
+    var fb = window._fb;
+    var firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+    var appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    var app = fb.initializeApp(firebaseConfig);
+    var auth = fb.getAuth(app);
+    var firestore = fb.getFirestore(app);
+
+    setSync('Connecting to cloud sync…');
+
+    // RULE 3: Authenticate before performing any Firestore queries
+    var cred;
+    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+      cred = await fb.signInWithCustomToken(auth, __initial_auth_token);
+    } else {
+      cred = await fb.signInAnonymously(auth);
+    }
+
+    currentUser = cred.user;
+    if (!currentUser) {
+      setSync('Saved in memory. Export JSON backup in Progress to keep a copy.');
+      return;
+    }
+
+    var uid = currentUser.uid;
+    var uidBox = document.getElementById('uid-box');
+    if (uidBox) {
+      uidBox.textContent = 'Sync ID: ' + uid;
+      uidBox.style.display = 'inline-block';
+    }
+
+    // RULE 1: Strict path /artifacts/{appId}/users/{userId}/{collectionName}
+    var col = fb.collection(firestore, 'artifacts', appId, 'users', uid, 'dailylog');
+    var tm = setTimeout(function() {
+      setSync('Can’t reach cloud sync yet. Your changes stay active in this session.');
+    }, 10000);
+
+    // RULE 2: Simple collection listener without orderBy/where/limit
+    fb.onSnapshot(col, function(snap) {
+      clearTimeout(tm);
+      var ch = false;
+      snap.forEach(function(s) {
+        var r = s.data();
+        if (!r) return;
+        if (s.id === 'settings') {
+          lastU.settings = Math.max(lastU.settings || 0, r.u || 0);
+          if ((r.u || 0) > (db.su || 0)) {
+            db.goal = num(r.goal) || 10000;
+            if (Array.isArray(r.accts)) {
+              db.accts = r.accts.map(function(a) {
+                return { id: String((a && a.id) || ''), name: String((a && a.name) || 'Account'), s: num(a && a.s) };
+              });
+            }
+            db.su = r.u;
+            ch = true;
+          }
+          return;
+        }
+        if (/^w_[A-Za-z0-9_-]{1,40}$/.test(s.id)) {
+          lastU[s.id] = Math.max(lastU[s.id] || 0, r.u || 1);
+          var lw = db.wish[s.id];
+          if (!lw || (r.u || 1) > (lw.u || 1)) {
+            db.wish[s.id] = normW(s.id, r);
+            ch = true;
+          }
+          return;
+        }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(s.id)) return;
+        lastU[s.id] = Math.max(lastU[s.id] || 0, r.u || 1);
+        var l = db.days[s.id];
+        if (!l || (r.u || 1) > lu(l)) {
+          db.days[s.id] = norm(r);
+          ch = true;
+        }
+      });
+
+      if (ch) {
+        if (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+          stats();
+        } else {
+          draw();
+        }
+      }
+      if (!cloudCol) {
+        cloudCol = col;
+      }
+      if (!snap.metadata.fromCache && !firstSync) {
+        firstSync = true;
+        pushAll();
+      } else {
+        setSync('Synced across your devices.');
+      }
+    }, function() {
+      clearTimeout(tm);
+      setSync('Cloud sync paused. Your changes stay active in this session.');
+    });
+  } catch (e) {
+    setSync('Saved in memory. Export JSON backup in Progress to keep a copy.');
+  }
+};
+
+/* Weight Trend SVG Panel */
+function wtPanel() {
+  var P = Object.keys(db.days).sort().filter(function(k) { return num(db.days[k].bw) > 0; }).map(function(k) { return { k: k, w: num(db.days[k].bw) }; }).slice(-30);
+  if (!P.length) return '<div class="panel"><h2>Body weight</h2><p class="empty">Log your weight in the Workout tab to see the trend.</p></div>';
+  var f = P[0], l = P[P.length - 1], ws = P.map(function(p) { return p.w; }), mn = Math.min.apply(null, ws), mx = Math.max.apply(null, ws), rg = (mx - mn) || 1;
+  var cut = iso(new Date(new Date(l.k + 'T12:00:00').getTime() - 7 * 864e5)), r7 = P.filter(function(p) { return p.k > cut; }), av = r7.reduce(function(a, p) { return a + p.w; }, 0) / r7.length;
+  var ch = Math.round((l.w - f.w) * 10) / 10, dl2 = function(k) { return new Date(k + 'T12:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
+  var pts = P.map(function(p, i) { return { x: P.length > 1 ? 12 + i * 276 / (P.length - 1) : 150, y: 96 - (p.w - mn) / rg * 76 }; });
+  var svg = '<svg viewBox="0 0 300 110" width="100%" role="img" aria-label="Body weight trend"><polyline fill="none" style="stroke:var(--acc)" stroke-width="2" stroke-linejoin="round" points="' + pts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ') + '"/>' + pts.map(function(p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--acc)"/>'; }).join('') + '</svg>';
+  return '<div class="panel"><h2>Body weight</h2><p class="meta" style="margin:6px 0 0">Latest ' + l.w + ' kg on ' + dl2(l.k) + '. ' + (P.length > 1 ? 'Change since ' + dl2(f.k) + ': ' + (ch > 0 ? '+' : '') + ch + ' kg. ' : '') + '7-day average ' + (Math.round(av * 10) / 10) + ' kg. Range ' + mn + ' to ' + mx + ' kg.</p>' + svg + '<div class="lbls"><span style="text-align:left">' + dl2(f.k) + '</span><span style="text-align:right">' + dl2(l.k) + '</span></div></div>';
+}
+
+/* Money */
+var mD = { t: 'out', amt: '', acct: '', note: '' }, aD = { name: '', bal: '' }, mMsg = '', eMsg = '', wD = { name: '', price: '', img: '' }, wMsg = '';
+function R(n) { n = Math.round(n * 100) / 100; return (n < 0 ? '−' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 2 }); }
+function mon(d) { return (d && d.money) || []; }
+function net(id) { var t = 0; Object.keys(db.days).forEach(function(k) { mon(db.days[k]).forEach(function(m) { if (m.acct == id) t += m.t == 'in' ? num(m.amt) : -num(m.amt); }); }); return t; }
+function bal(a) { return num(a.s) + net(a.id); }
+function totalSav() { return db.accts.reduce(function(s, a) { return s + bal(a); }, 0); }
+function an(id) { var a = db.accts.filter(function(x) { return x.id == id; })[0]; return a ? a.name : 'Removed account'; }
+function selAcct() { return db.accts.some(function(a) { return a.id == mD.acct; }) ? mD.acct : (db.accts[0] || {}).id; }
+function mTot() { var e = document.getElementById('mtot'); if (e) e.textContent = R(totalSav()); }
+
+function mView() {
+  var L = mon(peek(cur)), ea = 0, sp = 0, h, lab = new Date(cur + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+  L.forEach(function(m) { if (m.t == 'in') ea += num(m.amt); else sp += num(m.amt); });
+  h = '<div class="panel"><h2>Total savings</h2><div class="big" id="mtot">' + R(totalSav()) + '</div><p class="meta" style="margin:2px 0 10px">Edit a balance to match your bank or wallet. Money you log below is added to or taken from the account you choose.</p>';
+  if (!db.accts.length) h += '<p class="empty">No accounts yet. Add your first one below.</p>';
+  db.accts.forEach(function(a, i) {
+    h += '<div class="frow"><input value="' + esc(a.name) + '" oninput="aN(' + i + ',this.value)" aria-label="Account name"><input type="number" inputmode="decimal" step="0.01" value="' + Math.round(bal(a) * 100) / 100 + '" oninput="aB(' + i + ',this.value)" aria-label="Balance of ' + esc(a.name) + ' in rupees" style="max-width:150px"><button class="x" onclick="aDel(' + i + ')" aria-label="Remove account">✕</button></div>';
+  });
+  h += '<div class="grid2" style="margin-top:14px"><input placeholder="New account (e.g. SBI savings, Cash)" value="' + esc(aD.name) + '" oninput="aD.name=this.value" aria-label="New account name"><input type="number" inputmode="decimal" step="0.01" placeholder="Balance now (₹)" value="' + esc(aD.bal) + '" oninput="aD.bal=this.value" aria-label="Starting balance"></div><button onclick="aAdd()">Add account</button>';
+  if (mMsg) h += '<p class="msg" role="status">' + esc(mMsg) + '</p>';
+  h += '</div><div class="panel"><h2>' + lab + '</h2><div class="stats" style="margin:10px 0"><div class="stat"><b>' + R(ea) + '</b><span>earned</span></div><div class="stat"><b>' + R(sp) + '</b><span>spent</span></div><div class="stat"><b>' + R(ea - sp) + '</b><span>net</span></div></div>';
+  if (!db.accts.length) h += '<p class="empty">Add an account first, then log what you earn and spend.</p>';
+  else {
+    var sa = selAcct();
+    h += '<div class="grid2"><select onchange="mD.t=this.value" aria-label="Earned or spent"><option value="out"' + (mD.t == 'out' ? ' selected' : '') + '>Spent</option><option value="in"' + (mD.t == 'in' ? ' selected' : '') + '>Earned</option></select><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="Amount (₹)" value="' + esc(mD.amt) + '" oninput="mD.amt=this.value" aria-label="Amount"></div><div class="grid2"><select onchange="mD.acct=this.value" aria-label="Account">' + db.accts.map(function(a) { return '<option value="' + esc(a.id) + '"' + (a.id == sa ? ' selected' : '') + '>' + esc(a.name) + '</option>'; }).join('') + '</select><input placeholder="Note (e.g. salary, groceries)" value="' + esc(mD.note) + '" oninput="mD.note=this.value" aria-label="Note"></div><button class="pri" onclick="mAdd()">Add entry</button>';
+    if (eMsg) h += '<p class="msg" role="status">' + esc(eMsg) + '</p>';
+  }
+  L.forEach(function(m, i) {
+    h += '<div class="item"><span>' + esc(m.note || (m.t == 'in' ? 'Earned' : 'Spent')) + '<br><span class="meta">' + esc(an(m.acct)) + '</span></span><b style="color:var(--' + (m.t == 'in' ? 'acc' : 'food') + ')">' + (m.t == 'in' ? '+' : '−') + R(num(m.amt)) + '</b><button class="x" onclick="mDel(' + i + ')" aria-label="Remove entry">✕</button></div>';
+  });
+  h += '</div>';
+  var days = Object.keys(db.days).sort().reverse().filter(function(k) { return mon(db.days[k]).length; }).slice(0, 7);
+  if (days.length) h += '<div class="panel"><h2>Recent days</h2>' + days.map(function(k) { var e = 0, s = 0; mon(db.days[k]).forEach(function(m) { if (m.t == 'in') e += num(m.amt); else s += num(m.amt); }); return '<div class="pb"><span>' + new Date(k + 'T12:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + '</span><span class="meta">+' + R(e) + ' / −' + R(s) + '</span><b>' + R(e - s) + '</b></div>'; }).join('') + '</div>';
+  return h;
+}
+function aN(i, v) { db.accts[i].name = v; db.su = Date.now(); save(); }
+function aB(i, v) { var a = db.accts[i]; a.s = num(v) - net(a.id); db.su = Date.now(); save(); mTot(); }
+function aAdd() { var n = aD.name.trim(); if (!n) { mMsg = 'Give the account a name.'; draw(); return; } db.accts.push({ id: 'a' + Date.now().toString(36), name: n, s: num(aD.bal) }); aD = { name: '', bal: '' }; mMsg = ''; db.su = Date.now(); save(); draw(); }
+function aDel(i) { var a = db.accts[i], used = Object.keys(db.days).some(function(k) { return mon(db.days[k]).some(function(m) { return m.acct == a.id; }); }); if (used) { mMsg = '“' + a.name + '” has logged entries, so it can’t be removed. Delete those entries first.'; draw(); return; } db.accts.splice(i, 1); mMsg = ''; db.su = Date.now(); save(); draw(); }
+function mAdd() { var a = num(mD.amt); if (!(a > 0)) { eMsg = 'Enter an amount above zero.'; draw(); return; } var d = day(); (d.money = d.money || []).push({ t: mD.t, amt: Math.round(a * 100) / 100, acct: selAcct(), note: mD.note.trim() }); mD.amt = ''; mD.note = ''; eMsg = ''; save(); draw(); }
+function mDel(i) { var d = day(); (d.money = d.money || []).splice(i, 1); save(); draw(); }
+
+/* Wishlist */
+function normW(id, r) {
+  var im = String(r.img || '');
+  if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(im)) im = '';
+  return { id: id, name: String(r.name || 'Item'), price: num(r.price), img: im, got: !!r.got, del: !!r.del, u: num(r.u) || 1, c: num(r.c) || 1 };
+}
+function wList() { return Object.keys(db.wish).map(function(k) { return db.wish[k]; }).filter(function(w) { return !w.del; }).sort(function(a, b) { return (a.got ? 1 : 0) - (b.got ? 1 : 0) || a.c - b.c; }); }
+function lView() {
+  var L = wList(), want = L.filter(function(w) { return !w.got; }), tot = want.reduce(function(s, w) { return s + num(w.price); }, 0), sv = totalSav();
+  var h = '<div class="panel"><h2>Add to wishlist</h2><div class="grid2" style="margin-top:8px"><input placeholder="Item name" value="' + esc(wD.name) + '" oninput="wD.name=this.value" aria-label="Item name"><input type="number" inputmode="decimal" min="0" step="0.01" placeholder="Price (₹)" value="' + esc(wD.price) + '" oninput="wD.price=this.value" aria-label="Price"></div><label class="meta" for="wimg">Photo (optional)</label><input id="wimg" type="file" accept="image/*" onchange="wPick(this)">' + (wD.img ? '<img src="' + wD.img + '" alt="Chosen photo" style="width:96px;height:96px;object-fit:cover;border-radius:10px;margin-top:8px;display:block">' : '') + '<div class="btns"><button class="pri" onclick="wAdd()">Add to wishlist</button></div>' + (wMsg ? '<p class="msg" role="status">' + esc(wMsg) + '</p>' : '') + '</div><div class="panel"><h2>Your wishlist</h2>';
+  if (!L.length) return h + '<p class="empty">Nothing here yet. Add something you want to buy.</p></div>';
+  h += '<p class="meta" style="margin:6px 0 12px">' + want.length + ' still wanted, ' + R(tot) + ' in total. Savings: ' + R(sv) + '. ' + (!want.length ? '' : sv >= tot ? 'Your savings cover everything on the list.' : 'You need ' + R(tot - sv) + ' more to buy it all.') + '</p><div class="wg">';
+  L.forEach(function(w) {
+    var st = w.got ? 'Bought' : (num(w.price) <= sv ? 'Affordable now' : 'Needs ' + R(num(w.price) - sv) + ' more');
+    h += '<div class="wc' + (w.got ? ' got' : '') + '">' + (w.img ? '<img src="' + w.img + '" alt="' + esc(w.name) + '">' : '<div class="ph"></div>') + '<div class="b"><b>' + esc(w.name) + '</b><div>' + R(num(w.price)) + '</div><div class="meta">' + st + '</div><div class="btns" style="margin-top:6px"><button onclick="wGot(\'' + w.id + '\')">' + (w.got ? 'Move back' : 'Mark bought') + '</button><button class="x" onclick="wDel(\'' + w.id + '\')">Remove</button></div></div></div>';
+  });
+  return h + '</div></div>';
+}
+function wPick(inp) {
+  var f = inp.files && inp.files[0]; if (!f) return;
+  if (!/^image\//.test(f.type)) { wMsg = 'Choose an image file.'; draw(); return; }
+  var rd = new FileReader();
+  rd.onload = function() {
+    var im = new Image();
+    im.onload = function() {
+      var m = Math.min(1, 420 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = Math.round(im.width * m); c.height = Math.round(im.height * m);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      wD.img = c.toDataURL('image/jpeg', 0.72); wMsg = ''; draw();
+    };
+    im.onerror = function() { wMsg = 'Couldn’t read that image. Try a JPG or PNG.'; draw(); };
+    im.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+}
+function wAdd() {
+  var n = wD.name.trim(); if (!n) { wMsg = 'Give the item a name.'; draw(); return; }
+  var t = Date.now(), id = 'w_' + t.toString(36) + Math.random().toString(36).slice(2, 5);
+  db.wish[id] = { id: id, name: n, price: num(wD.price), img: wD.img, got: false, del: false, u: t, c: t };
+  wD = { name: '', price: '', img: '' }; wMsg = ''; save(); draw();
+}
+function wGot(id) { var w = db.wish[id]; if (!w) return; w.got = !w.got; w.u = Date.now(); save(); draw(); }
+function wDel(id) { var w = db.wish[id]; if (!w) return; w.del = true; w.img = ''; w.u = Date.now(); save(); draw(); }
+
+/* Standard Browser File Downloads & Restore */
+function xmsg(t) { var e = document.getElementById('xmsg'); if (e) e.textContent = t; }
+function cell(v, t) { var s = String(v == null ? '' : v); if (t && /^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function csvOut(h, rows) { return '\ufeff' + [h].concat(rows).join('\r\n'); }
+
+function triggerBrowserDownload(filename, content, mimeType) {
+  try {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    xmsg('Saved ' + filename + '.');
+  } catch (e) {
+    xmsg('Couldn’t download the file in this browser.');
+  }
+}
+
+function exp(kind) {
+  var ks = Object.keys(db.days).sort(), rows = [], name, data, st = iso(new Date()), mime = 'text/csv;charset=utf-8';
+  if (kind == 'json') {
+    name = 'daily-log-backup-' + st + '.json';
+    mime = 'application/json;charset=utf-8';
+    data = JSON.stringify({ app: 'daily-log', version: 1, exported: new Date().toISOString(), goal: db.goal, accts: db.accts, wish: db.wish, days: db.days }, null, 2);
+  } else if (kind == 'daily') {
+    name = 'daily-summary-' + st + '.csv';
+    ks.forEach(function(k) { var d = db.days[k]; rows.push([k, d.mood || '', num(d.bw) || '', num(d.steps), vol(d), kcal(d), prot(d), cell(d.journal, 1)].join(',')); });
+    data = csvOut('date,mood_1to5,body_weight_kg,steps,lifting_volume_kg,calories_kcal,protein_g,journal', rows);
+  } else if (kind == 'lifts') {
+    name = 'workouts-' + st + '.csv';
+    ks.forEach(function(k) { (db.days[k].workout || []).forEach(function(e) { e.sets.forEach(function(s, j) { rows.push([k, cell(e.name, 1), j + 1, num(s.reps), num(s.kg), num(s.reps) * num(s.kg)].join(',')); }); }); });
+    data = csvOut('date,exercise,set,reps,weight_kg,volume_kg', rows);
+  } else if (kind == 'money') {
+    name = 'money-' + st + '.csv';
+    ks.forEach(function(k) { mon(db.days[k]).forEach(function(m) { rows.push([k, m.t == 'in' ? 'earned' : 'spent', num(m.amt), cell(an(m.acct), 1), cell(m.note, 1)].join(',')); }); });
+    data = csvOut('date,type,amount_inr,account,note', rows);
+  } else {
+    name = 'food-' + st + '.csv';
+    ks.forEach(function(k) { (db.days[k].food || []).forEach(function(f) { rows.push([k, cell(f.meal, 1), cell(f.item, 1), num(f.kcal), num(f.p)].join(',')); }); });
+    data = csvOut('date,meal,item,calories_kcal,protein_g', rows);
+  }
+  if (kind != 'json' && !rows.length) { xmsg('Nothing to export yet.'); return; }
+  triggerBrowserDownload(name, data, mime);
+}
+
+function importFile(inp) {
+  var f = inp.files && inp.files[0]; if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function() {
+    try {
+      var o = JSON.parse(rd.result); if (!o || typeof o.days != 'object') throw 0;
+      var n = 0;
+      Object.keys(o.days).forEach(function(k) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+        var d = o.days[k]; if (!d || typeof d != 'object') return;
+        var nd = norm(d), l = db.days[k];
+        if (!l || nd.u >= lu(l)) { nd.u = Date.now(); db.days[k] = nd; n++; }
+      });
+      if (o.goal && !db.su) { db.goal = num(o.goal) || 10000; }
+      if (Array.isArray(o.accts) && !db.accts.length) {
+        db.accts = o.accts.map(function(a) { return { id: String((a && a.id) || 'a' + Math.random().toString(36).slice(2, 7)), name: String((a && a.name) || 'Account'), s: num(a && a.s) }; });
+        db.su = Date.now();
+      }
+      if (o.wish && typeof o.wish == 'object') Object.keys(o.wish).forEach(function(k) { if (!/^w_[A-Za-z0-9_-]{1,40}$/.test(k) || db.wish[k] || !o.wish[k]) return; var w = normW(k, o.wish[k]); w.u = Date.now(); db.wish[k] = w; });
+      schedulePush(); draw(); xmsg('Restored ' + n + ' day' + (n == 1 ? '' : 's') + ' from the backup.');
+    } catch (e) { xmsg('That file isn’t a Daily Log backup. Choose a .json backup file.'); }
+  };
+  rd.readAsText(f);
+}
+
+/* Date & Utility Helpers */
+function iso(d) { var z = new Date(d.getTime() - d.getTimezoneOffset() * 6e4); return z.toISOString().slice(0, 10); }
+cur = iso(new Date());
+function peek(d) { return db.days[d] || null; }
+function day() { return db.days[cur] || (db.days[cur] = { journal: '', mood: 0, steps: '', bw: '', money: [], workout: [], food: [] }); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function num(v) { var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function vol(d) { var t = 0; (d.workout || []).forEach(function(e) { e.sets.forEach(function(s) { t += num(s.reps) * num(s.kg); }); }); return Math.round(t); }
+function kcal(d) { return Math.round((d.food || []).reduce(function(a, f) { return a + num(f.kcal); }, 0)); }
+function prot(d) { return Math.round((d.food || []).reduce(function(a, f) { return a + num(f.p); }, 0)); }
+function fmt(n) { return Number(n).toLocaleString('en-IN'); }
+function shift(n) { var d = new Date(cur + 'T12:00:00'); d.setDate(d.getDate() + n); goto(iso(d)); }
+function goto(v) { if (!v) return; cur = v; draw(); }
+function setTab(t) { tab = t; draw(); }
+
+function stats() {
+  var d = peek(cur) || {}, st = num(d.steps), pct = Math.min(100, Math.round(st / db.goal * 100));
+  document.getElementById('stats').innerHTML =
+    '<div class="stat"><b>' + fmt(st) + '</b><span>steps of ' + fmt(db.goal) + '</span><div class="bar"><i style="width:' + pct + '%"></i></div></div>' +
+    '<div class="stat"><b>' + fmt(vol(d)) + ' kg</b><span>lifted in total</span></div>' +
+    '<div class="stat"><b>' + fmt(kcal(d)) + '</b><span>kcal eaten, ' + prot(d) + ' g protein</span></div>';
+}
+
+function draw() {
+  document.getElementById('dt').value = cur;
+  var T = [['journal', 'Journal'], ['workout', 'Workout'], ['food', 'Food'], ['money', 'Money'], ['wish', 'Wishlist'], ['progress', 'Progress']];
+  document.getElementById('tabs').innerHTML = T.map(function(t) { return '<button role="tab" aria-selected="' + (tab == t[0]) + '" onclick="setTab(\'' + t[0] + '\')">' + t[1] + '</button>'; }).join('');
+  stats();
+  var v = document.getElementById('view');
+  v.innerHTML = tab == 'journal' ? jView() : tab == 'workout' ? wView() : tab == 'food' ? fView() : tab == 'money' ? mView() : tab == 'wish' ? lView() : pView();
+  var names = {}; Object.keys(db.days).forEach(function(k) { (db.days[k].workout || []).forEach(function(e) { if (e.name) names[e.name] = 1; }); });
+  ['Squat', 'Bench press', 'Deadlift', 'Overhead press', 'Barbell row', 'Pull-up', 'Lat pulldown', 'Leg press', 'Bicep curl', 'Tricep pushdown'].forEach(function(n) { names[n] = 1; });
+  document.getElementById('lifts').innerHTML = Object.keys(names).map(function(n) { return '<option value="' + esc(n) + '">'; }).join('');
+}
+
+/* Journal */
+function jView() {
+  var d = peek(cur) || {}, m = d.mood || 0, faces = ['Rough', 'Low', 'Okay', 'Good', 'Great'];
+  return '<div class="panel"><h2>What I did today</h2><p class="meta">Write freely: work, people, wins, lessons, how you felt.</p>' +
+    '<div class="mood" role="group" aria-label="Mood">' + faces.map(function(f, i) { return '<button aria-pressed="' + (m == i + 1) + '" onclick="setMood(' + (i + 1) + ')">' + f + '</button>'; }).join('') + '</div>' +
+    '<textarea id="jt" placeholder="Today I…" oninput="day().journal=this.value;save()">' + esc(d.journal || '') + '</textarea></div>';
+}
+function setMood(n) { var d = day(); d.mood = d.mood == n ? 0 : n; save(); draw(); }
+
+/* Workout */
+function wView() {
+  var d = peek(cur) || { workout: [] }, h = '<div class="panel"><h2>Body weight</h2><div class="row" style="margin-top:8px"><input type="number" inputmode="decimal" min="0" step="0.1" placeholder="Weight today" value="' + esc(d.bw || '') + '" oninput="day().bw=this.value;save()" aria-label="Body weight in kg"><span class="meta">kg</span></div></div><div class="panel"><h2>Steps</h2><div class="row" style="margin-top:8px"><input type="number" inputmode="numeric" min="0" id="st" placeholder="Steps today" value="' + esc(d.steps || '') + '" oninput="day().steps=this.value;save();stats()" aria-label="Steps today"><button onclick="addSteps(1000)">+1,000</button></div>' +
+    '<div class="row" style="margin-top:8px"><label class="meta" for="gl">Daily goal</label><input id="gl" type="number" min="0" value="' + db.goal + '" style="max-width:120px" oninput="db.goal=num(this.value)||10000;db.su=Date.now();save();stats()"></div></div>';
+  h += '<div class="panel"><h2>Lifting</h2>';
+  if (!d.workout.length) h += '<p class="empty">No exercises yet. Add your first lift.</p>';
+  d.workout.forEach(function(e, i) {
+    h += '<div class="ex"><div class="row"><input list="lifts" placeholder="Exercise (e.g. Bench press)" value="' + esc(e.name) + '" oninput="day().workout[' + i + '].name=this.value;save()" aria-label="Exercise name"><button class="x" onclick="delEx(' + i + ')" aria-label="Remove exercise">Remove</button></div>' +
+      '<div class="sets"><small></small><small>Reps</small><small>Weight (kg)</small><small></small>';
+    e.sets.forEach(function(s, j) {
+      h += '<span class="n">' + (j + 1) + '</span><input type="number" inputmode="numeric" min="0" value="' + esc(s.reps) + '" oninput="setv(' + i + ',' + j + ',\'reps\',this.value)" aria-label="Reps set ' + (j + 1) + '"><input type="number" inputmode="decimal" min="0" step="0.5" value="' + esc(s.kg) + '" oninput="setv(' + i + ',' + j + ',\'kg\',this.value)" aria-label="Weight set ' + (j + 1) + '"><button class="x" onclick="delSet(' + i + ',' + j + ')" aria-label="Remove set ' + (j + 1) + '">✕</button>';
+    });
+    var sv = e.sets.reduce(function(a, s) { return a + num(s.reps) * num(s.kg); }, 0);
+    h += '</div><div class="row"><button onclick="addSet(' + i + ')">Add set</button><span class="meta">' + e.sets.length + ' sets, ' + fmt(Math.round(sv)) + ' kg volume</span></div></div>';
+  });
+  h += '<div style="margin-top:16px"><button class="pri" onclick="addEx()">Add exercise</button></div></div>';
+  return h;
+}
+function addSteps(n) { var d = day(); d.steps = num(d.steps) + n; save(); draw(); }
+function addEx() { day().workout.push({ name: '', sets: [{ reps: '', kg: '' }] }); save(); draw(); }
+function delEx(i) { day().workout.splice(i, 1); save(); draw(); }
+function addSet(i) { var s = day().workout[i].sets, l = s[s.length - 1] || { reps: '', kg: '' }; s.push({ reps: l.reps, kg: l.kg }); save(); draw(); }
+function delSet(i, j) { var e = day().workout[i]; e.sets.splice(j, 1); if (!e.sets.length) e.sets.push({ reps: '', kg: '' }); save(); draw(); }
+function setv(i, j, k, v) { day().workout[i].sets[j][k] = v; save(); stats(); }
+
+/* Food & AI Nutrition Estimation via Gemini API */
+function fView() {
+  var d = peek(cur) || { food: [] }, meals = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+  var h = builder(meals) + '<div class="panel"><h2>Eaten today</h2>';
+  if (!d.food.length) h += '<p class="empty">Nothing logged yet.</p>';
+  meals.forEach(function(m) {
+    var L = d.food.map(function(f, i) { return { f: f, i: i }; }).filter(function(x) { return x.f.meal == m; });
+    if (!L.length) return;
+    h += '<div class="meal"><h3>' + m + '</h3>' + L.map(function(x) { return '<div class="item"><span>' + esc(x.f.item) + '<br><span class="meta">' + fmt(num(x.f.kcal)) + ' kcal' + (x.f.p ? ', ' + esc(x.f.p) + ' g protein' : '') + '</span></span><button class="x" onclick="delFood(' + x.i + ')" aria-label="Remove">✕</button></div>'; }).join('') + '</div>';
+  });
+  return h + '</div>';
+}
+
+var draft = [{ q: '', k: '', p: '', b: '', done: false, stale: false }], dMeal = 'Breakfast', busy = false, dMsg = '';
+
+function builder(meals) {
+  var h = '<div class="panel"><h2>Build a meal</h2><p class="meta">Add one row per item, written the way you would say it: “50g oats”, “200ml milk”, “1 egg”. AI estimates calories and protein for each, then adds them up.</p>' +
+    '<select onchange="dMeal=this.value" style="margin-top:8px" aria-label="Meal">' + meals.map(function(m) { return '<option' + (m == dMeal ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select>';
+  draft.forEach(function(r, i) {
+    h += '<div class="frow"><input placeholder="e.g. 200ml milk" value="' + esc(r.q) + '" oninput="dq(' + i + ',this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addRow()}" aria-label="Food item ' + (i + 1) + '"><button class="x" onclick="delRow(' + i + ')" aria-label="Remove item">✕</button></div>';
+    if (r.done) h += '<div class="est"><label>Calories (kcal)<input type="number" inputmode="decimal" min="0" value="' + esc(r.k) + '" oninput="de(' + i + ',\'k\',this.value)"></label><label>Protein (g)<input type="number" inputmode="decimal" min="0" value="' + esc(r.p) + '" oninput="de(' + i + ',\'p\',this.value)"></label>' + (r.b ? '<span class="meta">' + esc(r.b) + '</span>' : '') + '</div>';
+  });
+  h += '<div class="tot" id="dtot">' + dtot() + '</div>';
+  if (dMsg) h += '<p class="msg" role="status">' + esc(dMsg) + '</p>';
+  h += '<div class="btns"><button onclick="addRow()">Add another item</button><button onclick="estimate()"' + (busy ? ' disabled' : '') + '>' + (busy ? 'Estimating…' : 'Estimate nutrition') + '</button><button class="pri" onclick="saveMeal()">Add meal to log</button></div></div>';
+  return h;
+}
+
+function dtot() {
+  var k = 0, p = 0, n = 0; draft.forEach(function(r) { if (r.done) { k += num(r.k); p += num(r.p); n++; } });
+  return n ? 'Meal total: ' + fmt(Math.round(k)) + ' kcal, ' + (Math.round(p * 10) / 10) + ' g protein' : 'Meal total appears here after you estimate.';
+}
+function dq(i, v) { var r = draft[i]; r.q = v; if (r.done) r.stale = true; }
+function de(i, k, v) { draft[i][k] = v; draft[i].stale = false; var t = document.getElementById('dtot'); if (t) t.textContent = dtot(); }
+function addRow() { draft.push({ q: '', k: '', p: '', b: '', done: false, stale: false }); draw(); var f = document.querySelectorAll('.frow input'); if (f.length) f[f.length - 1].focus(); }
+function delRow(i) { draft.splice(i, 1); if (!draft.length) draft.push({ q: '', k: '', p: '', b: '', done: false, stale: false }); draw(); }
+
+async function fetchGeminiWithBackoff(url, payload, maxRetries) {
+  var delay = 1000;
+  for (var attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      var response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        if (response.status === 429 && attempt < maxRetries) {
+          await new Promise(function(res) { setTimeout(res, delay); });
+          delay *= 2;
+          continue;
+        }
+        throw new Error('HTTP ' + response.status);
+      }
+      return await response.json();
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      await new Promise(function(res) { setTimeout(res, delay); });
+      delay *= 2;
+    }
+  }
+}
+
+async function estimate() {
+  var idx = []; draft.forEach(function(r, i) { if (r.q.trim() && (!r.done || r.stale)) idx.push(i); });
+  if (!idx.length) { dMsg = 'Type at least one item first.'; draw(); return; }
+
+  busy = true; dMsg = ''; draw();
+
+  var list = idx.map(function(i, n) { return (n + 1) + '. ' + draft[i].q.trim(); }).join('\n');
+  var systemPrompt = 'You are a nutrition estimator. For each food item provided, estimate calories (kcal) and protein (grams) for the exact quantity written, using typical values from standard food composition databases (USDA FoodData Central and the Indian Food Composition Tables). If no quantity is given, assume one common serving and note it in basis. If a food is cooked, vegetarian, or common in Indian homes, use that typical preparation. Keep basis under 10 words naming the portion assumed.';
+
+  var apiKey = "";
+  var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' + apiKey;
+
+  var payload = {
+    contents: [{ parts: [{ text: list }] }],
+    systemInstruction: {
+      parts: [{ text: systemPrompt }]
+    },
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            kcal: { type: "NUMBER" },
+            protein_g: { type: "NUMBER" },
+            basis: { type: "STRING" }
+          },
+          propertyOrdering: ["kcal", "protein_g", "basis"]
+        }
+      }
+    }
+  };
+
+  try {
+    var result = await fetchGeminiWithBackoff(apiUrl, payload, 3);
+    var jsonText = result && result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text;
+    if (!jsonText) throw new Error('Empty response');
+    var a = JSON.parse(jsonText);
+    if (!Array.isArray(a)) a = [];
+
+    idx.forEach(function(i, n) {
+      var o = a[n] || {};
+      var r = draft[i];
+      r.k = Math.round(num(o.kcal));
+      r.p = Math.round(num(o.protein_g) * 10) / 10;
+      r.b = o.basis || '';
+      r.done = true;
+      r.stale = false;
+    });
+    if (a.length < idx.length) dMsg = 'Some items came back empty. Fill them in by hand.';
+  } catch (e) {
+    idx.forEach(function(i) { draft[i].done = true; draft[i].stale = false; });
+    dMsg = 'Automatic estimation is unavailable right now. Type calories and protein for each item yourself.';
+  } finally {
+    busy = false;
+    draw();
+  }
+}
+
+function saveMeal() {
+  var rows = draft.filter(function(r) { return r.q.trim(); });
+  if (!rows.length) { dMsg = 'Add at least one item.'; draw(); return; }
+  if (rows.some(function(r) { return !r.done || r.stale; })) { dMsg = 'Press Estimate nutrition first so every item has numbers.'; draw(); return; }
+  rows.forEach(function(r) { day().food.push({ meal: dMeal, item: r.q.trim(), kcal: r.k, p: r.p }); });
+  draft = [{ q: '', k: '', p: '', b: '', done: false, stale: false }]; dMsg = ''; save(); draw();
+}
+function delFood(i) { day().food.splice(i, 1); save(); draw(); }
+
+/* Progress */
+function pView() {
+  var days = [], i;
+  for (i = 6; i >= 0; i--) { var dt = new Date(cur + 'T12:00:00'); dt.setDate(dt.getDate() - i); days.push(iso(dt)); }
+  function chart(title, fn, col) {
+    var vals = days.map(function(k) { return fn(peek(k) || {}); }), mx = Math.max.apply(null, vals.concat([1]));
+    return '<div class="panel"><h2>' + title + '</h2><div class="chart">' + vals.map(function(v) { return '<div>' + (v ? fmt(v) : '') + '<i style="height:' + Math.round(v / mx * 80) + '%;background:' + col + '"></i></div>'; }).join('') + '</div><div class="lbls">' + days.map(function(k) { return '<span>' + new Date(k + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short' }) + '</span>'; }).join('') + '</div></div>';
+  }
+  var logged = Object.keys(db.days).filter(function(k) { var d = db.days[k]; return d.journal || num(d.steps) || (d.workout && d.workout.length) || (d.food && d.food.length); }).length;
+  var streak = 0, t = new Date(iso(new Date()) + 'T12:00:00');
+  for (;;) { var d2 = db.days[iso(t)]; if (d2 && (d2.journal || num(d2.steps) || (d2.workout && d2.workout.length) || (d2.food && d2.food.length))) { streak++; t.setDate(t.getDate() - 1); } else break; }
+  var pb = {};
+  Object.keys(db.days).forEach(function(k) { (db.days[k].workout || []).forEach(function(e) { var n = (e.name || '').trim(); if (!n) return; e.sets.forEach(function(s) { var w = num(s.kg); if (w > (pb[n] ? pb[n].kg : 0)) pb[n] = { kg: w, reps: s.reps, date: k }; }); }); });
+  var pbs = Object.keys(pb).sort();
+  return wtPanel() + '<div class="panel"><h2>Consistency</h2><p class="meta" style="margin:6px 0 0">' + streak + '-day streak up to today. ' + logged + ' days logged in total.</p></div>' +
+    chart('Steps, last 7 days', function(d) { return num(d.steps); }, 'var(--acc)') +
+    chart('Lifting volume (kg), last 7 days', vol, 'var(--lift)') +
+    chart('Calories (kcal), last 7 days', kcal, 'var(--food)') +
+    '<div class="panel"><h2>Heaviest lifts</h2>' + (pbs.length ? pbs.map(function(n) { return '<div class="pb"><span>' + esc(n) + '</span><b>' + pb[n].kg + ' kg × ' + esc(pb[n].reps || '?') + '</b></div>'; }).join('') : '<p class="empty">Log a lift with weight to see your records.</p>') + '</div>' +
+    '<div class="panel"><h2>Backup and export</h2><p class="meta" style="margin:6px 0 0">Your log automatically syncs to the cloud when connected. Download a copy to your device whenever you like.</p><div class="btns"><button class="pri" onclick="exp(\'json\')">Backup (JSON)</button><button onclick="exp(\'daily\')">Daily summary (CSV)</button><button onclick="exp(\'lifts\')">Workouts (CSV)</button><button onclick="exp(\'food\')">Food (CSV)</button><button onclick="exp(\'money\')">Money (CSV)</button></div><div style="margin-top:14px"><label class="meta" for="imp">Restore from a backup file</label><input id="imp" type="file" accept=".json,application/json" onchange="importFile(this)"></div><p class="msg" id="xmsg" role="status"></p></div>';
+}
+
+draw();
+if (window._fb) window.initCloud();
+</script>
+</body>
+</html>
